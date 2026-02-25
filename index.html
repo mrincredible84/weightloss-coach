@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Weight Loss Tracker</title>
+    
+    <!-- Mobile App Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Weight Coach">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            font-family: 'Inter', sans-serif; 
+            -webkit-tap-highlight-color: transparent;
+        }
+        .card { background: white; border-radius: 1rem; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
+        .input-field { width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 0.5rem; outline: none; transition: border-color 0.2s; font-size: 16px; /* Prevents zoom on iPhone */ }
+        .input-field:focus { border-color: #3b82f6; ring: 2px solid #bfdbfe; }
+        
+        /* Safe area for iPhones with notches */
+        .safe-area-top { padding-top: env(safe-area-inset-top); }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen pb-12 safe-area-top">
+
+    <div class="max-w-3xl mx-auto px-4 pt-4">
+        <header class="mb-6 text-center">
+            <h1 class="text-2xl font-bold text-slate-900">Weight Coach</h1>
+            <p class="text-slate-500 text-sm mt-1">Target Strategy & Macro Calculator</p>
+        </header>
+
+        <!-- Input Section -->
+        <div class="card p-6 mb-6">
+            <h2 class="text-lg font-semibold mb-4 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                </svg>
+                Current Stats
+            </h2>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Current (lbs)</label>
+                    <input type="number" id="currentWeight" class="input-field" placeholder="240">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Goal (lbs)</label>
+                    <input type="number" id="goalWeight" class="input-field" placeholder="180">
+                </div>
+            </div>
+            <button onclick="calculateTargets()" class="w-full mt-6 bg-blue-600 active:bg-blue-800 text-white font-bold py-4 rounded-xl shadow-lg transition duration-200">
+                Calculate & Save
+            </button>
+        </div>
+
+        <!-- Results Section -->
+        <div id="results" class="hidden space-y-6">
+            
+            <!-- Timeline & Totals -->
+            <div class="grid grid-cols-2 gap-4">
+                <div class="card p-4 border-l-4 border-blue-500">
+                    <p class="text-[10px] text-slate-500 uppercase font-bold tracking-wider">To Lose</p>
+                    <h3 class="text-xl font-bold" id="totalLbsToLose">--</h3>
+                </div>
+                <div class="card p-4 border-l-4 border-green-500">
+                    <p class="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Timeline</p>
+                    <h3 class="text-xl font-bold" id="daysToGoal">--</h3>
+                </div>
+            </div>
+
+            <!-- Daily Targets -->
+            <div class="card p-6">
+                <h2 class="text-lg font-bold mb-6 text-center">Daily Nutrition Targets</h2>
+                
+                <div class="text-center mb-8">
+                    <div class="inline-block px-6 py-3 bg-blue-50 rounded-2xl mb-1">
+                        <span class="text-3xl font-black text-blue-600" id="dailyCalories">--</span>
+                    </div>
+                    <p class="text-slate-400 text-xs font-bold uppercase tracking-widest">Daily Calories</p>
+                </div>
+
+                <div class="grid grid-cols-3 gap-3">
+                    <div class="text-center p-3 bg-red-50 rounded-xl">
+                        <p class="text-red-600 font-bold uppercase text-[10px] mb-1">Protein</p>
+                        <p class="text-lg font-bold" id="proteinGrams">--g</p>
+                    </div>
+                    <div class="text-center p-3 bg-yellow-50 rounded-xl">
+                        <p class="text-yellow-600 font-bold uppercase text-[10px] mb-1">Fats</p>
+                        <p class="text-lg font-bold" id="fatGrams">--g</p>
+                    </div>
+                    <div class="text-center p-3 bg-emerald-50 rounded-xl">
+                        <p class="text-emerald-600 font-bold uppercase text-[10px] mb-1">Carbs</p>
+                        <p class="text-lg font-bold" id="carbGrams">--g</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Coaching / Legend -->
+            <div class="card p-5 bg-slate-900 text-white">
+                <h3 class="text-sm font-bold mb-3 text-blue-400 flex items-center uppercase tracking-wider">
+                    Coach's Notes
+                </h3>
+                <ul class="space-y-3 text-xs text-slate-400">
+                    <li class="flex items-start">
+                        <span class="text-blue-500 mr-2">/</span>
+                        <span>Stall Rule: If weight doesn't move for 2 weeks, drop daily intake by 200 calories.</span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-blue-500 mr-2">/</span>
+                        <span>Targets are locked to your GOAL weight to build the body you want.</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="initial-message" class="text-center py-12 text-slate-400 text-sm">
+            Enter weights to generate your strategy.
+        </div>
+
+    </div>
+
+    <script>
+        // Load saved values on startup
+        window.onload = function() {
+            const savedCurrent = localStorage.getItem('coach_current');
+            const savedGoal = localStorage.getItem('coach_goal');
+            
+            if (savedCurrent) document.getElementById('currentWeight').value = savedCurrent;
+            if (savedGoal) document.getElementById('goalWeight').value = savedGoal;
+            
+            if (savedCurrent && savedGoal) calculateTargets();
+        };
+
+        function calculateTargets() {
+            const current = parseFloat(document.getElementById('currentWeight').value);
+            const goal = parseFloat(document.getElementById('goalWeight').value);
+
+            if (!current || !goal) return;
+
+            // Save to LocalStorage for "App" persistence
+            localStorage.setItem('coach_current', current);
+            localStorage.setItem('coach_goal', goal);
+
+            // 1. Weight Loss Totals
+            const lbsToLose = current - goal;
+            const totalCaloriesToLose = lbsToLose * 3500;
+            const daysToGoal = totalCaloriesToLose / 500;
+
+            // 2. Daily Intake (Goal Weight X 12)
+            const dailyCalories = goal * 12;
+
+            // 3. Protein (Goal Weight X 1)
+            const proteinGrams = goal;
+            const proteinCals = proteinGrams * 4;
+
+            // 4. Fats (25% of Daily Intake)
+            const fatCals = dailyCalories * 0.25;
+            const fatGrams = Math.round(fatCals / 9);
+
+            // 5. Carbs (Remainder)
+            const remainingCalsAfterProtein = dailyCalories - proteinCals;
+            const carbCals = remainingCalsAfterProtein - fatCals;
+            const carbGrams = Math.round(carbCals / 4);
+
+            // Update UI
+            document.getElementById('totalLbsToLose').innerText = `${lbsToLose} lbs`;
+            document.getElementById('daysToGoal').innerText = `${Math.round(daysToGoal)} Days`;
+
+            document.getElementById('dailyCalories').innerText = dailyCalories.toLocaleString();
+            
+            document.getElementById('proteinGrams').innerText = `${proteinGrams}g`;
+            document.getElementById('fatGrams').innerText = `${fatGrams}g`;
+            document.getElementById('carbGrams').innerText = `${carbGrams}g`;
+
+            // Reveal results
+            document.getElementById('results').classList.remove('hidden');
+            document.getElementById('initial-message').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
