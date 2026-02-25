@@ -10,6 +10,11 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Body Redesign">
     
+    <!-- App Icon Tags with Cache Buster -->
+    <link rel="apple-touch-icon" href="icon.png?v=2">
+    <link rel="icon" type="image/png" href="icon.png?v=2">
+    <meta name="theme-color" content="#0f172a">
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
     <style>
@@ -21,8 +26,6 @@
         .input-field { width: 100%; padding: 0.85rem; border: 1px solid #e2e8f0; border-radius: 0.75rem; outline: none; transition: all 0.2s; font-size: 16px; }
         .input-field:focus { border-color: #0f172a; ring: 2px solid #e2e8f0; }
         .safe-area-top { padding-top: env(safe-area-inset-top); }
-        
-        /* Premium Gradient Accent */
         .accent-gradient { background: linear-gradient(135deg, #0f172a 0%, #334155 100%); }
     </style>
 </head>
@@ -61,7 +64,6 @@
                     Deploy Strategy
                 </button>
                 
-                <!-- New Clear Button Position -->
                 <button onclick="clearData()" class="w-full py-3 text-slate-400 hover:text-red-500 border border-transparent hover:border-red-100 rounded-xl transition-all text-[10px] font-bold uppercase tracking-widest">
                     Clear Profile Data
                 </button>
@@ -70,8 +72,6 @@
 
         <!-- Results Section -->
         <div id="results" class="hidden space-y-6">
-            
-            <!-- Timeline & Totals -->
             <div class="grid grid-cols-2 gap-4">
                 <div class="card p-5 border-t-4 border-blue-600">
                     <p class="text-[10px] text-slate-400 uppercase font-bold tracking-wider mb-1">Total Adjustment</p>
@@ -83,17 +83,14 @@
                 </div>
             </div>
 
-            <!-- Daily Targets -->
             <div class="card p-8 border border-slate-100">
                 <h2 class="text-sm font-bold text-slate-400 uppercase tracking-widest mb-8 text-center">Daily Nutritional Blueprint</h2>
-                
                 <div class="text-center mb-10">
                     <div class="inline-block px-8 py-4 bg-slate-900 rounded-2xl mb-2 shadow-inner">
                         <span class="text-4xl font-black text-white" id="dailyCalories">--</span>
                     </div>
                     <p class="text-slate-400 text-[10px] font-bold uppercase tracking-[0.2em]">Daily Calorie Ceiling</p>
                 </div>
-
                 <div class="grid grid-cols-3 gap-4">
                     <div class="text-center p-4 bg-slate-50 rounded-2xl border border-slate-100">
                         <p class="text-slate-400 font-bold uppercase text-[9px] mb-1 tracking-tighter">Protein</p>
@@ -110,11 +107,8 @@
                 </div>
             </div>
 
-            <!-- Protocol Rules -->
             <div class="card p-6 accent-gradient text-white shadow-2xl">
-                <h3 class="text-xs font-black mb-4 text-blue-300 flex items-center uppercase tracking-[0.2em]">
-                    The Strategy Protocol
-                </h3>
+                <h3 class="text-xs font-black mb-4 text-blue-300 flex items-center uppercase tracking-[0.2em]">The Strategy Protocol</h3>
                 <ul class="space-y-4 text-xs">
                     <li class="flex items-start">
                         <span class="text-blue-400 font-bold mr-3">01</span>
@@ -122,7 +116,7 @@
                     </li>
                     <li class="flex items-start">
                         <span class="text-blue-400 font-bold mr-3">02</span>
-                        <span class="text-slate-200 leading-relaxed"><strong>Future Fueling:</strong> Targets are calculated based on your <strong>Target Weight</strong> to build the body you want.</span>
+                        <span class="text-slate-200 leading-relaxed"><strong>Future Fueling:</strong> Targets are calculated based on your <strong>Target Weight</strong>.</span>
                     </li>
                 </ul>
             </div>
@@ -135,17 +129,14 @@
         <div id="initial-message" class="text-center py-16">
             <p class="text-slate-300 text-sm font-medium tracking-wide italic">"Eat for the body you want, not the one you have."</p>
         </div>
-
     </div>
 
     <script>
         window.onload = function() {
             const savedCurrent = localStorage.getItem('coach_current');
             const savedGoal = localStorage.getItem('coach_goal');
-            
             if (savedCurrent) document.getElementById('currentWeight').value = savedCurrent;
             if (savedGoal) document.getElementById('goalWeight').value = savedGoal;
-            
             if (savedCurrent && savedGoal) calculateTargets();
         };
 
@@ -164,7 +155,6 @@
             const goalVal = document.getElementById('goalWeight').value;
             const current = parseFloat(currentVal);
             const goal = parseFloat(goalVal);
-
             if (!current || !goal) return;
 
             localStorage.setItem('coach_current', currentVal);
