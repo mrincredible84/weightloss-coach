@@ -36,11 +36,14 @@
 
         <!-- Input Section -->
         <div class="card p-6 mb-6 border border-slate-100">
-            <h2 class="text-sm font-bold text-slate-400 uppercase tracking-widest mb-4 flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
-                Current Profile
+            <h2 class="text-sm font-bold text-slate-400 uppercase tracking-widest mb-4 flex items-center justify-between">
+                <span class="flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                    Current Profile
+                </span>
+                <button onclick="clearData()" class="text-[9px] text-slate-300 hover:text-red-400 transition-colors uppercase tracking-widest">Clear All</button>
             </h2>
             <div class="grid grid-cols-2 gap-4">
                 <div>
@@ -85,15 +88,15 @@
 
                 <div class="grid grid-cols-3 gap-4">
                     <div class="text-center p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                        <p class="text-slate-400 font-bold uppercase text-[9px] mb-2 tracking-tighter">Protein</p>
+                        <p class="text-slate-400 font-bold uppercase text-[9px] mb-1 tracking-tighter">Protein</p>
                         <p class="text-xl font-black text-slate-900" id="proteinGrams">--g</p>
                     </div>
                     <div class="text-center p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                        <p class="text-slate-400 font-bold uppercase text-[9px] mb-2 tracking-tighter">Dietary Fats</p>
+                        <p class="text-slate-400 font-bold uppercase text-[9px] mb-1 tracking-tighter">Fats</p>
                         <p class="text-xl font-black text-slate-900" id="fatGrams">--g</p>
                     </div>
                     <div class="text-center p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                        <p class="text-slate-400 font-bold uppercase text-[9px] mb-2 tracking-tighter">Carbohydrates</p>
+                        <p class="text-slate-400 font-bold uppercase text-[9px] mb-1 tracking-tighter">Carbs</p>
                         <p class="text-xl font-black text-slate-900" id="carbGrams">--g</p>
                     </div>
                 </div>
@@ -111,30 +114,24 @@
                     </li>
                     <li class="flex items-start">
                         <span class="text-blue-400 font-bold mr-3">02</span>
-                        <span class="text-slate-200 leading-relaxed"><strong>Future Fueling:</strong> Targets are calculated based on your <strong>Target Body Weight</strong>, ensuring you build the body you want.</span>
+                        <span class="text-slate-200 leading-relaxed"><strong>Future Fueling:</strong> Targets are calculated based on your <strong>Target Weight</strong> to build the body you want.</span>
                     </li>
                 </ul>
             </div>
             
             <footer class="text-center pt-4 pb-8">
                 <p class="text-[10px] text-slate-400 font-bold uppercase tracking-[0.3em]">Strategy by Warren</p>
-                <p class="text-[9px] text-slate-300 mt-2 italic">Strict compliance ensures optimal results.</p>
             </footer>
         </div>
 
         <div id="initial-message" class="text-center py-16">
             <p class="text-slate-300 text-sm font-medium tracking-wide italic">"Eat for the body you want, not the one you have."</p>
-            <div class="mt-4 flex justify-center space-x-1">
-                <div class="w-1 h-1 bg-slate-200 rounded-full"></div>
-                <div class="w-1 h-1 bg-slate-200 rounded-full"></div>
-                <div class="w-1 h-1 bg-slate-200 rounded-full"></div>
-            </div>
         </div>
 
     </div>
 
     <script>
-        // Load saved values on startup
+        // Load saved values IF they exist in the browser
         window.onload = function() {
             const savedCurrent = localStorage.getItem('coach_current');
             const savedGoal = localStorage.getItem('coach_goal');
@@ -145,48 +142,54 @@
             if (savedCurrent && savedGoal) calculateTargets();
         };
 
+        // Function to wipe all data from the specific device
+        function clearData() {
+            localStorage.removeItem('coach_current');
+            localStorage.removeItem('coach_goal');
+            document.getElementById('currentWeight').value = '';
+            document.getElementById('goalWeight').value = '';
+            document.getElementById('results').classList.add('hidden');
+            document.getElementById('initial-message').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
         function calculateTargets() {
-            const current = parseFloat(document.getElementById('currentWeight').value);
-            const goal = parseFloat(document.getElementById('goalWeight').value);
+            const currentVal = document.getElementById('currentWeight').value;
+            const goalVal = document.getElementById('goalWeight').value;
+            const current = parseFloat(currentVal);
+            const goal = parseFloat(goalVal);
 
             if (!current || !goal) return;
 
-            // Save to LocalStorage for persistence
-            localStorage.setItem('coach_current', current);
-            localStorage.setItem('coach_goal', goal);
+            // Save to LocalStorage so the user's progress is remembered locally
+            localStorage.setItem('coach_current', currentVal);
+            localStorage.setItem('coach_goal', goalVal);
 
-            // Calculation Logic
+            // Calculations Logic
             const lbsToLose = current - goal;
-            const totalCaloriesToLose = lbsToLose * 3500;
-            const daysToGoal = totalCaloriesToLose / 500;
-
+            // Formulas based on Warren's strategy
+            const daysToGoal = (lbsToLose * 3500) / 500;
             const dailyCalories = goal * 12;
-            const proteinGrams = goal; // Goal Weight x 1
-            const proteinCals = proteinGrams * 4;
+            const proteinGrams = goal; 
+            const fatGrams = Math.round((dailyCalories * 0.25) / 9);
+            const carbGrams = Math.round((dailyCalories - (proteinGrams * 4) - (dailyCalories * 0.25)) / 4);
 
-            const fatCals = dailyCalories * 0.25; // 25% of intake
-            const fatGrams = Math.round(fatCals / 9);
-
-            const remainingCalsAfterProtein = dailyCalories - proteinCals;
-            const carbCals = remainingCalsAfterProtein - fatCals;
-            const carbGrams = Math.round(carbCals / 4);
-
-            // Update UI
-            document.getElementById('totalLbsToLose').innerText = `${lbsToLose} lbs`;
-            document.getElementById('daysToGoal').innerText = `${Math.round(daysToGoal)} Days`;
-
+            // UI Update
+            document.getElementById('totalLbsToLose').innerText = lbsToLose + " lbs";
+            document.getElementById('daysToGoal').innerText = Math.round(daysToGoal) + " Days";
             document.getElementById('dailyCalories').innerText = dailyCalories.toLocaleString();
-            
-            document.getElementById('proteinGrams').innerText = `${proteinGrams}g`;
-            document.getElementById('fatGrams').innerText = `${fatGrams}g`;
-            document.getElementById('carbGrams').innerText = `${carbGrams}g`;
+            document.getElementById('proteinGrams').innerText = proteinGrams + "g";
+            document.getElementById('fatGrams').innerText = fatGrams + "g";
+            document.getElementById('carbGrams').innerText = carbGrams + "g";
 
-            // Reveal results
             document.getElementById('results').classList.remove('hidden');
             document.getElementById('initial-message').classList.add('hidden');
             
             // Smooth scroll to view results
-            window.scrollTo({ top: document.getElementById('results').offsetTop - 20, behavior: 'smooth' });
+            setTimeout(() => {
+                const results = document.getElementById('results');
+                results.scrollIntoView({ behavior: 'smooth' });
+            }, 100);
         }
     </script>
 </body>
