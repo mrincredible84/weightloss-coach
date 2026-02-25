@@ -36,15 +36,15 @@
 
         <!-- Input Section -->
         <div class="card p-6 mb-6 border border-slate-100">
-            <h2 class="text-sm font-bold text-slate-400 uppercase tracking-widest mb-4 flex items-center justify-between">
-                <span class="flex items-center">
+            <div class="flex items-center mb-4">
+                <h2 class="text-sm font-bold text-slate-400 uppercase tracking-widest flex items-center">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     </svg>
                     Current Profile
-                </span>
-                <button onclick="clearData()" class="text-[9px] text-slate-300 hover:text-red-400 transition-colors uppercase tracking-widest">Clear All</button>
-            </h2>
+                </h2>
+            </div>
+            
             <div class="grid grid-cols-2 gap-4">
                 <div>
                     <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1.5 ml-1">Current Weight</label>
@@ -55,9 +55,17 @@
                     <input type="number" id="goalWeight" class="input-field bg-slate-50" placeholder="lbs">
                 </div>
             </div>
-            <button onclick="calculateTargets()" class="w-full mt-6 accent-gradient active:opacity-90 text-white font-bold py-4 rounded-xl shadow-xl transition-all duration-200 uppercase tracking-widest text-xs">
-                Deploy Strategy
-            </button>
+
+            <div class="mt-6 space-y-3">
+                <button onclick="calculateTargets()" class="w-full accent-gradient active:opacity-90 text-white font-bold py-4 rounded-xl shadow-xl transition-all duration-200 uppercase tracking-widest text-xs">
+                    Deploy Strategy
+                </button>
+                
+                <!-- New Clear Button Position -->
+                <button onclick="clearData()" class="w-full py-3 text-slate-400 hover:text-red-500 border border-transparent hover:border-red-100 rounded-xl transition-all text-[10px] font-bold uppercase tracking-widest">
+                    Clear Profile Data
+                </button>
+            </div>
         </div>
 
         <!-- Results Section -->
@@ -119,7 +127,7 @@
                 </ul>
             </div>
             
-            <footer class="text-center pt-4 pb-8">
+            <footer class="text-center pt-4 pb-8 border-t border-slate-100">
                 <p class="text-[10px] text-slate-400 font-bold uppercase tracking-[0.3em]">Strategy by Warren</p>
             </footer>
         </div>
@@ -131,7 +139,6 @@
     </div>
 
     <script>
-        // Load saved values IF they exist in the browser
         window.onload = function() {
             const savedCurrent = localStorage.getItem('coach_current');
             const savedGoal = localStorage.getItem('coach_goal');
@@ -142,7 +149,6 @@
             if (savedCurrent && savedGoal) calculateTargets();
         };
 
-        // Function to wipe all data from the specific device
         function clearData() {
             localStorage.removeItem('coach_current');
             localStorage.removeItem('coach_goal');
@@ -161,20 +167,16 @@
 
             if (!current || !goal) return;
 
-            // Save to LocalStorage so the user's progress is remembered locally
             localStorage.setItem('coach_current', currentVal);
             localStorage.setItem('coach_goal', goalVal);
 
-            // Calculations Logic
             const lbsToLose = current - goal;
-            // Formulas based on Warren's strategy
             const daysToGoal = (lbsToLose * 3500) / 500;
             const dailyCalories = goal * 12;
             const proteinGrams = goal; 
             const fatGrams = Math.round((dailyCalories * 0.25) / 9);
             const carbGrams = Math.round((dailyCalories - (proteinGrams * 4) - (dailyCalories * 0.25)) / 4);
 
-            // UI Update
             document.getElementById('totalLbsToLose').innerText = lbsToLose + " lbs";
             document.getElementById('daysToGoal').innerText = Math.round(daysToGoal) + " Days";
             document.getElementById('dailyCalories').innerText = dailyCalories.toLocaleString();
@@ -185,7 +187,6 @@
             document.getElementById('results').classList.remove('hidden');
             document.getElementById('initial-message').classList.add('hidden');
             
-            // Smooth scroll to view results
             setTimeout(() => {
                 const results = document.getElementById('results');
                 results.scrollIntoView({ behavior: 'smooth' });
